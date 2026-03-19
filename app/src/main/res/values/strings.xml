@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Movie Watchlist</string>
+    <string name="add_movie">Add Movie</string>
+    <string name="edit_movie">Edit Movie</string>
+    <string name="poster">Poster</string>
+    <string name="title">Title</string>
+    <string name="status">Status</string>
+    <string name="rating">Rating</string>
+    <string name="runtime_minutes">Runtime (minutes)</string>
+    <string name="review">Review</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="save">Save</string>
+    <string name="empty_movies">No movies yet</string>
 </resources>
