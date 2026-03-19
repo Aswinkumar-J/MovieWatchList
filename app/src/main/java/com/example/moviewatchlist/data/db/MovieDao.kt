@@ -28,7 +28,7 @@ interface MovieDao {
     fun getAll(): Flow<List<Movie>>
 
     @Query("SELECT * FROM movies WHERE status = :status ORDER BY title COLLATE NOCASE ASC")
-    fun getByStatus(status: WatchStatus): Flow<List<Movie>>
+    fun getByStatus(status: String): Flow<List<Movie>>
 
     @Query("SELECT * FROM movies WHERE id = :id LIMIT 1")
     fun getById(id: Long): Flow<Movie?>

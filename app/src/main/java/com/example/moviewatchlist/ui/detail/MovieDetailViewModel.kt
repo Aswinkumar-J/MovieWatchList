@@ -44,6 +44,19 @@ class MovieDetailViewModel(
                 val movie = repository.movieById(movieId).filterNotNull().firstOrNull()
                 if (movie != null) {
                     _uiState.value = movie.toUiState(isLoaded = true)
+                    
+                    // If runtime or synopsis are missing, fetch from TMDB.
+                    if ((movie.runtimeMinutes == null || movie.synopsis.isNullOrBlank()) && movie.tmdbId != null) {
+                        val fullMovie = repository.getMovieDetails(movie.tmdbId)
+                        if (fullMovie != null) {
+                            val updatedMovie = movie.copy(
+                                runtimeMinutes = fullMovie.runtimeMinutes ?: movie.runtimeMinutes,
+                                synopsis = if (movie.synopsis.isNullOrBlank()) fullMovie.synopsis else movie.synopsis
+                            )
+                            _uiState.value = updatedMovie.toUiState(isLoaded = true)
+                            repository.update(updatedMovie)
+                        }
+                    }
                 } else {
                     _uiState.value = _uiState.value.copy(isLoaded = true)
                 }
@@ -92,6 +105,19 @@ class MovieDetailViewModel(
             }
             _uiState.value = _uiState.value.copy(isSaving = false)
             onSaved()
+        }
+    }
+
+    fun deleteMovie(onDeleted: () -> Unit) {
+        val currentMovieId = _uiState.value.movieId
+        if (currentMovieId < 0) return
+
+        viewModelScope.launch {
+            val movie = repository.movieById(currentMovieId).filterNotNull().firstOrNull()
+            if (movie != null) {
+                repository.delete(movie)
+                onDeleted()
+            }
         }
     }
 

@@ -85,10 +85,32 @@ class MovieDetailFragment : Fragment() {
             }
         }
 
+        binding.toolbar.setNavigationIcon(R.drawable.ic_add_24) // Placeholder or back icon if you have one
+        // Wait, normally we use the back button from the activity or a specific icon.
+        // Let's just use the menu for delete.
+        
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_delete -> {
+                    showDeleteConfirmation()
+                    true
+                }
+                else -> false
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     binding.progress.isVisible = !state.isLoaded
+
+                    // Handle menu visibility correctly. 
+                    // Since it's a Fragment-owned toolbar, we can just hide the item.
+                    binding.toolbar.menu.findItem(R.id.action_delete)?.isVisible = !viewModel.isCreateMode
 
                     if (lastPosterUrl != state.posterUrl) {
                         lastPosterUrl = state.posterUrl
@@ -134,10 +156,23 @@ class MovieDetailFragment : Fragment() {
                     binding.saveButton.isEnabled = !state.isSaving && state.title.isNotBlank()
 
                     val titleRes = if (viewModel.isCreateMode) R.string.add_movie else R.string.edit_movie
-                    binding.screenTitle.text = getString(titleRes)
+                    binding.toolbar.title = getString(titleRes)
                 }
             }
         }
+    }
+
+    private fun showDeleteConfirmation() {
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle(R.string.delete)
+            .setMessage(R.string.delete_confirmation)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                viewModel.deleteMovie {
+                    findNavController().popBackStack()
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun statusToLabel(status: WatchStatus): String =

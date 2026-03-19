@@ -37,13 +37,6 @@ class MainFragment : Fragment() {
             tab.text = tabs[position].title
         }.attach()
 
-        binding.fabAddMovie.setOnClickListener {
-            // Create mode: movieId uses default -1 in the destination
-            findNavController().navigate(
-                MainFragmentDirections.actionMainFragmentToMovieDetailFragment(),
-            )
-        }
-
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_search -> {

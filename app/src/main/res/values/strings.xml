@@ -13,4 +13,8 @@
     <string name="empty_movies">No movies yet</string>
     <string name="search_movies_hint">Search movies</string>
     <string name="no_results">No results</string>
+    <string name="delete">Delete</string>
+    <string name="delete_confirmation">Are you sure you want to delete this movie?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 </resources>

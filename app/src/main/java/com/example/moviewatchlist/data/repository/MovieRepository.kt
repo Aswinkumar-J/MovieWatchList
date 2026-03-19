@@ -16,7 +16,7 @@ class MovieRepository(
 ) {
     val allMovies: Flow<List<Movie>> = movieDao.getAll()
 
-    fun moviesByStatus(status: WatchStatus): Flow<List<Movie>> = movieDao.getByStatus(status)
+    fun moviesByStatus(status: WatchStatus): Flow<List<Movie>> = movieDao.getByStatus(status.name)
 
     fun movieById(id: Long): Flow<Movie?> = movieDao.getById(id)
 
@@ -77,6 +77,26 @@ class MovieRepository(
             if (existing != null) return existing.id
         }
         return movieDao.insert(movie)
+    }
+
+    suspend fun getMovieDetails(tmdbId: Long): Movie? {
+        return try {
+            val dto = tmdbApiService.getMovieDetails(
+                movieId = tmdbId,
+                apiKey = TmdbConstants.TMDB_API_KEY,
+            )
+            Movie(
+                title = dto.title.orEmpty(),
+                status = WatchStatus.PLAN_TO_WATCH,
+                synopsis = dto.overview,
+                posterUrl = dto.poster_path?.let { "${TmdbConstants.TMDB_IMAGE_BASE_URL}$it" },
+                tmdbId = dto.id,
+                tmdbVoteAverage = dto.vote_average?.toFloat(),
+                runtimeMinutes = dto.runtime,
+            )
+        } catch (e: Exception) {
+            null
+        }
     }
 }
 
