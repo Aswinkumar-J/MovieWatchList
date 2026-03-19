@@ -15,6 +15,9 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(movie: Movie): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIgnoreByTmdbId(movie: Movie): Long
+
     @Update
     suspend fun update(movie: Movie)
 
@@ -29,5 +32,11 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies WHERE id = :id LIMIT 1")
     fun getById(id: Long): Flow<Movie?>
+
+    @Query("SELECT * FROM movies WHERE tmdbId = :tmdbId LIMIT 1")
+    fun getByTmdbId(tmdbId: Long): Flow<Movie?>
+
+    @Query("SELECT * FROM movies WHERE tmdbId IN (:tmdbIds)")
+    suspend fun getByTmdbIds(tmdbIds: List<Long>): List<Movie>
 }
 

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.moviewatchlist.R
 import com.example.moviewatchlist.data.model.WatchStatus
 import com.example.moviewatchlist.databinding.FragmentMainBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -41,6 +42,18 @@ class MainFragment : Fragment() {
             findNavController().navigate(
                 MainFragmentDirections.actionMainFragmentToMovieDetailFragment(),
             )
+        }
+
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_search -> {
+                    findNavController().navigate(
+                        MainFragmentDirections.actionMainFragmentToSearchFragment(),
+                    )
+                    true
+                }
+                else -> false
+            }
         }
         return binding.root
     }

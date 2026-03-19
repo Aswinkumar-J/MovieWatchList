@@ -17,6 +17,7 @@ recyclerview = "1.4.0"
 viewpager2 = "1.1.0"
 coroutines = "1.10.2"
 glide = "5.0.5"
+retrofit = "3.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,8 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

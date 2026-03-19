@@ -22,6 +22,8 @@ data class MovieDetailUiState(
     val synopsis: String? = null,
     val runtimeMinutes: Int? = null,
     val posterUrl: String? = null,
+    val tmdbId: Long? = null,
+    val tmdbVoteAverage: Float? = null,
     val isLoaded: Boolean = false,
     val isSaving: Boolean = false,
 )
@@ -103,6 +105,8 @@ class MovieDetailViewModel(
             synopsis = synopsis,
             runtimeMinutes = runtimeMinutes,
             posterUrl = posterUrl,
+            tmdbId = tmdbId,
+            tmdbVoteAverage = tmdbVoteAverage,
             isLoaded = isLoaded,
         )
 
@@ -116,6 +120,8 @@ class MovieDetailViewModel(
             synopsis = synopsis,
             runtimeMinutes = runtimeMinutes,
             posterUrl = posterUrl,
+            tmdbId = tmdbId,
+            tmdbVoteAverage = tmdbVoteAverage,
         )
 
     class Factory(

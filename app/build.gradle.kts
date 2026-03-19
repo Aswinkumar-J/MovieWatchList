@@ -64,6 +64,11 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.glide)
+
+    // TMDB networking
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -11,4 +11,6 @@
     <string name="synopsis">Synopsis</string>
     <string name="save">Save</string>
     <string name="empty_movies">No movies yet</string>
+    <string name="search_movies_hint">Search movies</string>
+    <string name="no_results">No results</string>
 </resources>

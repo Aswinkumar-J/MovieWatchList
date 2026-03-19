@@ -6,9 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.moviewatchlist.data.model.Movie
 import com.example.moviewatchlist.data.model.WatchStatus
 import com.example.moviewatchlist.databinding.ItemMovieBinding
+import com.example.moviewatchlist.R
 
 class MovieAdapter(
     private val onMovieClick: (movieId: Long) -> Unit,
@@ -28,6 +30,11 @@ class MovieAdapter(
         private val onMovieClick: (movieId: Long) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
+            Glide.with(binding.poster)
+                .load(movie.posterUrl)
+                .placeholder(R.drawable.poster_placeholder)
+                .into(binding.poster)
+
             binding.title.text = movie.title
             binding.runtime.text = movie.runtimeMinutes?.let { "${it} min" } ?: "—"
             binding.ratingText.text = if (movie.rating > 0f) movie.rating.toString() else "Not rated"

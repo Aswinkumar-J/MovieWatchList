@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.example.moviewatchlist.R
 import com.example.moviewatchlist.data.model.WatchStatus
 import com.example.moviewatchlist.databinding.FragmentMovieDetailBinding
@@ -35,6 +36,8 @@ class MovieDetailFragment : Fragment() {
             MovieDetailViewModel.Factory(repo, args.movieId),
         )[MovieDetailViewModel::class.java]
     }
+
+    private var lastPosterUrl: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,6 +89,14 @@ class MovieDetailFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     binding.progress.isVisible = !state.isLoaded
+
+                    if (lastPosterUrl != state.posterUrl) {
+                        lastPosterUrl = state.posterUrl
+                        Glide.with(binding.poster)
+                            .load(state.posterUrl)
+                            .placeholder(R.drawable.poster_placeholder)
+                            .into(binding.poster)
+                    }
 
                     // Avoid overwriting user typing continuously; only push values when first loaded.
                     if (state.isLoaded && binding.titleInput.text?.toString() != state.title) {

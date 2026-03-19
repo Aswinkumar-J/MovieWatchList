@@ -12,7 +12,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/app_name" />
+            app:title="@string/app_name"
+            app:menu="@menu/menu_main" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
