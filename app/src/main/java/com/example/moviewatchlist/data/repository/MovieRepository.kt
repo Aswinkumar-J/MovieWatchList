@@ -60,16 +60,23 @@ class MovieRepository(
         val tmdbIds = moviesToCache.mapNotNull { it.tmdbId }.distinct()
         if (tmdbIds.isEmpty()) return emptyList()
 
-        // Best-effort cache: duplicates are ignored via unique(tmdbId).
-        moviesToCache.forEach { movie ->
-            movieDao.insertIgnoreByTmdbId(movie)
-        }
-
         val cached = movieDao.getByTmdbIds(tmdbIds)
         val cachedByTmdbId = cached.associateBy { it.tmdbId }
 
-        // Preserve TMDb result order.
-        return tmdbIds.mapNotNull { tmdbId -> cachedByTmdbId[tmdbId] }
+        // Return cached if available, else return the new uninserted movie
+        return moviesToCache.map { movie ->
+            cachedByTmdbId[movie.tmdbId] ?: movie
+        }
+    }
+
+    suspend fun getOrInsertMovie(movie: Movie): Long {
+        if (movie.id != 0L) return movie.id
+        val tmdbId = movie.tmdbId
+        if (tmdbId != null) {
+            val existing = movieDao.getByTmdbIds(listOf(tmdbId)).firstOrNull()
+            if (existing != null) return existing.id
+        }
+        return movieDao.insert(movie)
     }
 }
 

@@ -39,10 +39,11 @@ class SearchFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = SearchAdapter { movieId ->
-            // Edit mode when movieId is provided.
-            val args = Bundle().apply { putLong("movieId", movieId) }
-            findNavController().navigate(R.id.movieDetailFragment, args)
+        val adapter = SearchAdapter { movie ->
+            viewModel.onMovieSelected(movie) { movieId ->
+                val args = Bundle().apply { putLong("movieId", movieId) }
+                findNavController().navigate(R.id.movieDetailFragment, args)
+            }
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())

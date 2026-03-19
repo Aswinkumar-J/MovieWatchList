@@ -13,7 +13,7 @@ import com.example.moviewatchlist.databinding.ItemSearchMovieBinding
 import java.util.Locale
 
 class SearchAdapter(
-    private val onMovieClick: (movieId: Long) -> Unit,
+    private val onMovieClick: (movie: Movie) -> Unit,
 ) : ListAdapter<Movie, SearchAdapter.SearchViewHolder>(Diff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
@@ -31,7 +31,7 @@ class SearchAdapter(
 
     class SearchViewHolder(
         private val binding: ItemSearchMovieBinding,
-        private val onMovieClick: (movieId: Long) -> Unit,
+        private val onMovieClick: (movie: Movie) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
             binding.title.text = movie.title
@@ -44,12 +44,20 @@ class SearchAdapter(
                 .placeholder(R.drawable.poster_placeholder)
                 .into(binding.poster)
 
-            binding.root.setOnClickListener { onMovieClick(movie.id) }
+            binding.root.setOnClickListener { onMovieClick(movie) }
         }
     }
 
     private object Diff : DiffUtil.ItemCallback<Movie>() {
-        override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean = oldItem.id == newItem.id
+        override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+            return if (oldItem.id != 0L && newItem.id != 0L) {
+                oldItem.id == newItem.id
+            } else if (oldItem.tmdbId != null && newItem.tmdbId != null) {
+                oldItem.tmdbId == newItem.tmdbId
+            } else {
+                oldItem == newItem
+            }
+        }
         override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean = oldItem == newItem
     }
 }

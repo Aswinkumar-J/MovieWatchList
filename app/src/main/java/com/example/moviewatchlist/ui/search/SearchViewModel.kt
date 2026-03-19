@@ -64,6 +64,13 @@ class SearchViewModel(
         queryFlow.value = query
     }
 
+    fun onMovieSelected(movie: Movie, onInserted: (Long) -> Unit) {
+        viewModelScope.launch {
+            val movieId = repository.getOrInsertMovie(movie)
+            onInserted(movieId)
+        }
+    }
+
     private fun Throwable.toUserMessage(): String {
         return when (this) {
             is TmdbException -> message ?: "Failed to fetch results from TMDB."
