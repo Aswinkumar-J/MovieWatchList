@@ -31,30 +31,23 @@ class SearchViewModel(
     init {
         viewModelScope.launch {
             queryFlow
-                .debounce(400)
+                .debounce(300)
                 .distinctUntilChanged()
                 .collectLatest { query ->
                     val trimmed = query.trim()
                     if (trimmed.isBlank()) {
-                        _uiState.update { it.copy(isLoading = false, results = emptyList(), errorMessage = null) }
+                        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+                        repository.allMovies.collect { movies ->
+                            _uiState.update { it.copy(isLoading = false, results = movies, errorMessage = null) }
+                        }
                         return@collectLatest
                     }
 
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-                    try {
-                        val movies = repository.searchMovies(trimmed)
+                    
+                    // Local search is reactive via Flow
+                    repository.searchLocalMovies(trimmed).collect { movies ->
                         _uiState.update { it.copy(isLoading = false, results = movies, errorMessage = null) }
-                    } catch (e: CancellationException) {
-                        // Let structured concurrency cancel gracefully.
-                        throw e
-                    } catch (t: Throwable) {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                results = emptyList(),
-                                errorMessage = t.toUserMessage(),
-                            )
-                        }
                     }
                 }
         }

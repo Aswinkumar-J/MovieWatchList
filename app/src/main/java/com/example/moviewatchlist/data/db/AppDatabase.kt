@@ -36,43 +36,40 @@ abstract class AppDatabase : RoomDatabase() {
                             object : Callback() {
                                 override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                                     super.onCreate(db)
+                                    // Pre-populate database on a background thread
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        getInstance(appContext).movieDao().apply {
-                                            insert(
-                                                Movie(
-                                                    title = "Interstellar",
-                                                    status = WatchStatus.PLAN_TO_WATCH,
-                                                    synopsis = "A team travels through a wormhole to ensure humanity’s survival.",
-                                                    runtimeMinutes = 169,
-                                                ),
+                                        val dao = getInstance(appContext).movieDao()
+                                        dao.insert(
+                                            Movie(
+                                                title = "Interstellar",
+                                                status = WatchStatus.PLAN_TO_WATCH,
+                                                synopsis = "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+                                                runtimeMinutes = 169,
+                                                tmdbId = 157336,
+                                                tmdbVoteAverage = 8.4f
                                             )
-                                            insert(
-                                                Movie(
-                                                    title = "The Dark Knight",
-                                                    status = WatchStatus.COMPLETED,
-                                                    rating = 5f,
-                                                    review = "A standout superhero crime thriller with incredible performances.",
-                                                    runtimeMinutes = 152,
-                                                ),
+                                        )
+                                        dao.insert(
+                                            Movie(
+                                                title = "The Dark Knight",
+                                                status = WatchStatus.COMPLETED,
+                                                rating = 5f,
+                                                review = "A masterpiece of the superhero genre. Ledger's performance is legendary.",
+                                                runtimeMinutes = 152,
+                                                tmdbId = 155,
+                                                tmdbVoteAverage = 8.5f
                                             )
-                                            insert(
-                                                Movie(
-                                                    title = "Breaking Bad (Pilot)",
-                                                    status = WatchStatus.CURRENTLY_WATCHING,
-                                                    rating = 4.5f,
-                                                    review = "Hooked already—great setup and characters.",
-                                                    runtimeMinutes = 58,
-                                                ),
+                                        )
+                                        dao.insert(
+                                            Movie(
+                                                title = "Inception",
+                                                status = WatchStatus.CURRENTLY_WATCHING,
+                                                synopsis = "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea.",
+                                                runtimeMinutes = 148,
+                                                tmdbId = 27205,
+                                                tmdbVoteAverage = 8.3f
                                             )
-                                            insert(
-                                                Movie(
-                                                    title = "Some Long Series",
-                                                    status = WatchStatus.DROPPED,
-                                                    rating = 2f,
-                                                    review = "Couldn’t stay engaged after a few episodes.",
-                                                ),
-                                            )
-                                        }
+                                        )
                                     }
                                 }
                             },

@@ -89,19 +89,23 @@
                 android:id="@+id/ratingLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/rating"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/steel_grey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/poster" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:numStars="5"
                 android:stepSize="0.5"
+                android:progressTint="@color/silver_metallic"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ratingLabel" />
 
@@ -140,30 +144,36 @@
                     android:minLines="3" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/synopsisLayout"
+            <TextView
+                android:id="@+id/synopsisLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:text="@string/synopsis"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/silver_metallic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/runtimeLayout">
+                app:layout_constraintTop_toBottomOf="@id/runtimeLayout" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/synopsisInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/synopsis"
-                    android:inputType="textMultiLine"
-                    android:minLines="3" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/synopsisInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:lineSpacingExtra="4dp"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/synopsisLabel" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/bottomBarrier"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="reviewLayout,synopsisLayout" />
+                app:constraint_referenced_ids="reviewLayout,synopsisInput" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/saveButton"

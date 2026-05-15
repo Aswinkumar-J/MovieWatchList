@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(movie: Movie): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -38,5 +38,8 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies WHERE tmdbId IN (:tmdbIds)")
     suspend fun getByTmdbIds(tmdbIds: List<Long>): List<Movie>
+
+    @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%' ORDER BY title COLLATE NOCASE ASC")
+    fun search(query: String): Flow<List<Movie>>
 }
 

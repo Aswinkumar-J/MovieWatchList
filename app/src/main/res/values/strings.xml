@@ -12,6 +12,8 @@
     <string name="save">Save</string>
     <string name="empty_movies">No movies yet</string>
     <string name="search_movies_hint">Search movies</string>
+    <string name="search_local_hint">Search my movies</string>
+    <string name="search_tmdb_hint">Search new movies (TMDB)</string>
     <string name="no_results">No results</string>
     <string name="delete">Delete</string>
     <string name="delete_confirmation">Are you sure you want to delete this movie?</string>

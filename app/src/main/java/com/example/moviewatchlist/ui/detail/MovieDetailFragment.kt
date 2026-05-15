@@ -33,7 +33,7 @@ class MovieDetailFragment : Fragment() {
         val repo = ServiceLocator.provideMovieRepository(requireContext())
         ViewModelProvider(
             this,
-            MovieDetailViewModel.Factory(repo, args.movieId),
+            MovieDetailViewModel.Factory(repo, args.movieId, args.tmdbIdArg),
         )[MovieDetailViewModel::class.java]
     }
 
@@ -77,7 +77,6 @@ class MovieDetailFragment : Fragment() {
         }
 
         binding.reviewInput.addTextChangedListener(simpleWatcher { viewModel.setReview(it) })
-        binding.synopsisInput.addTextChangedListener(simpleWatcher { viewModel.setSynopsis(it) })
 
         binding.saveButton.setOnClickListener {
             viewModel.save {
@@ -85,9 +84,7 @@ class MovieDetailFragment : Fragment() {
             }
         }
 
-        binding.toolbar.setNavigationIcon(R.drawable.ic_add_24) // Placeholder or back icon if you have one
-        // Wait, normally we use the back button from the activity or a specific icon.
-        // Let's just use the menu for delete.
+        binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24)
         
         binding.toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -95,6 +92,10 @@ class MovieDetailFragment : Fragment() {
 
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.action_share -> {
+                    shareMovieDetails()
+                    true
+                }
                 R.id.action_delete -> {
                     showDeleteConfirmation()
                     true
@@ -140,7 +141,8 @@ class MovieDetailFragment : Fragment() {
                     }
 
                     val showSynopsis = state.status == WatchStatus.PLAN_TO_WATCH
-                    binding.synopsisLayout.isVisible = showSynopsis
+                    binding.synopsisLabel.isVisible = showSynopsis
+                    binding.synopsisInput.isVisible = showSynopsis
                     binding.reviewLayout.isVisible = !showSynopsis
 
                     val reviewText = state.review.orEmpty()
@@ -162,8 +164,28 @@ class MovieDetailFragment : Fragment() {
         }
     }
 
+    private fun shareMovieDetails() {
+        val state = viewModel.uiState.value
+        val shareText = buildString {
+            append("Check out this movie: ${state.title}\n\n")
+            if (!state.synopsis.isNullOrBlank()) {
+                append("Synopsis: ${state.synopsis}\n\n")
+            }
+            state.tmdbId?.let { id ->
+                append("View on TMDB: https://www.themoviedb.org/movie/$id")
+            }
+        }
+
+        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(android.content.Intent.EXTRA_SUBJECT, state.title)
+            putExtra(android.content.Intent.EXTRA_TEXT, shareText)
+        }
+        startActivity(android.content.Intent.createChooser(intent, "Share Movie"))
+    }
+
     private fun showDeleteConfirmation() {
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.delete)
             .setMessage(R.string.delete_confirmation)
             .setPositiveButton(R.string.yes) { _, _ ->

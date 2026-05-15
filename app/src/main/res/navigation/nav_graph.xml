@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_mainFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_discoverFragment"
+            app:destination="@id/discoverFragment" />
     </fragment>
 
     <fragment
@@ -24,12 +27,25 @@
             android:name="movieId"
             app:argType="long"
             android:defaultValue="-1L" />
+        <argument
+            android:name="tmdbIdArg"
+            app:argType="long"
+            android:defaultValue="-1L" />
     </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.moviewatchlist.ui.search.SearchFragment"
         android:label="Search" />
+
+    <fragment
+        android:id="@+id/discoverFragment"
+        android:name="com.example.moviewatchlist.ui.discover.DiscoverFragment"
+        android:label="Discover">
+        <action
+            android:id="@+id/action_discoverFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
+    </fragment>
 
 </navigation>
 

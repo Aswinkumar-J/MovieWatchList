@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -31,12 +32,13 @@ data class MovieDetailUiState(
 class MovieDetailViewModel(
     private val repository: MovieRepository,
     private val movieId: Long,
+    private val tmdbIdArg: Long = -1L,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MovieDetailUiState(movieId = movieId))
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
 
     val isCreateMode: Boolean
-        get() = movieId < 0
+        get() = _uiState.value.movieId < 0
 
     init {
         if (!isCreateMode) {
@@ -61,6 +63,25 @@ class MovieDetailViewModel(
                     _uiState.value = _uiState.value.copy(isLoaded = true)
                 }
             }
+        } else if (tmdbIdArg != -1L) {
+            // New movie from Discovery/Search: fetch details first
+            viewModelScope.launch {
+                // Check if we already have this TMDB movie in our list
+                val existing = repository.allMovies.first().find { it.tmdbId == tmdbIdArg }
+                
+                if (existing != null) {
+                    // It's already in our list! Switch to edit mode for this existing ID.
+                    _uiState.value = existing.toUiState(isLoaded = true)
+                } else {
+                    // Not in list, fetch fresh details from TMDB
+                    val fullMovie = repository.getMovieDetails(tmdbIdArg)
+                    if (fullMovie != null) {
+                        _uiState.value = fullMovie.toUiState(isLoaded = true).copy(movieId = -1L)
+                    } else {
+                        _uiState.value = _uiState.value.copy(isLoaded = true)
+                    }
+                }
+            }
         } else {
             _uiState.value = _uiState.value.copy(isLoaded = true)
         }
@@ -71,11 +92,21 @@ class MovieDetailViewModel(
     }
 
     fun setStatus(value: WatchStatus) {
-        _uiState.value = _uiState.value.copy(status = value)
+        val newState = if (value == WatchStatus.PLAN_TO_WATCH) {
+            _uiState.value.copy(status = value, rating = 0f, review = null)
+        } else {
+            _uiState.value.copy(status = value)
+        }
+        _uiState.value = newState
     }
 
     fun setRating(value: Float) {
-        _uiState.value = _uiState.value.copy(rating = value)
+        val newState = if (value > 0f) {
+            _uiState.value.copy(rating = value, status = WatchStatus.COMPLETED)
+        } else {
+            _uiState.value.copy(rating = value)
+        }
+        _uiState.value = newState
     }
 
     fun setRuntimeMinutes(value: Int?) {
@@ -83,7 +114,13 @@ class MovieDetailViewModel(
     }
 
     fun setReview(value: String?) {
-        _uiState.value = _uiState.value.copy(review = value?.takeIf { it.isNotBlank() })
+        val trimmed = value?.takeIf { it.isNotBlank() }
+        val newState = if (trimmed != null) {
+            _uiState.value.copy(review = trimmed, status = WatchStatus.COMPLETED)
+        } else {
+            _uiState.value.copy(review = trimmed)
+        }
+        _uiState.value = newState
     }
 
     fun setSynopsis(value: String?) {
@@ -101,7 +138,7 @@ class MovieDetailViewModel(
             if (isCreateMode) {
                 repository.insert(movie)
             } else {
-                repository.update(movie.copy(id = movieId))
+                repository.update(movie)
             }
             _uiState.value = _uiState.value.copy(isSaving = false)
             onSaved()
@@ -138,7 +175,7 @@ class MovieDetailViewModel(
 
     private fun MovieDetailUiState.toMovieForSave(): Movie =
         Movie(
-            id = if (isCreateMode) 0 else movieId,
+            id = if (movieId < 0) 0 else movieId,
             title = title.trim(),
             status = status,
             rating = rating,
@@ -153,11 +190,12 @@ class MovieDetailViewModel(
     class Factory(
         private val repository: MovieRepository,
         private val movieId: Long,
+        private val tmdbIdArg: Long = -1L,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MovieDetailViewModel::class.java)) {
-                return MovieDetailViewModel(repository, movieId) as T
+                return MovieDetailViewModel(repository, movieId, tmdbIdArg) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

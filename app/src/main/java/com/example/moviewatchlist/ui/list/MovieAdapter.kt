@@ -37,7 +37,8 @@ class MovieAdapter(
 
             binding.title.text = movie.title
             binding.runtime.text = movie.runtimeMinutes?.let { "${it} min" } ?: "—"
-            binding.ratingText.text = if (movie.rating > 0f) movie.rating.toString() else "Not rated"
+            binding.ratingBar.rating = movie.rating
+            binding.ratingBar.visibility = if (movie.rating > 0f) View.VISIBLE else View.GONE
 
             val showSynopsis = movie.status == WatchStatus.PLAN_TO_WATCH
             binding.synopsisOrReview.text = if (showSynopsis) {

@@ -48,6 +48,12 @@ class MainFragment : Fragment() {
                 else -> false
             }
         }
+
+        binding.fabAdd.setOnClickListener {
+            findNavController().navigate(
+                MainFragmentDirections.actionMainFragmentToDiscoverFragment(),
+            )
+        }
         return binding.root
     }
 

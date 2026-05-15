@@ -1,5 +1,6 @@
 package com.example.moviewatchlist.data.remote.tmdb
 
+import com.example.moviewatchlist.data.remote.tmdb.dto.GenreResponse
 import com.example.moviewatchlist.data.remote.tmdb.dto.MovieDto
 import com.example.moviewatchlist.data.remote.tmdb.dto.MovieSearchResponse
 import retrofit2.http.GET
@@ -18,5 +19,17 @@ interface TmdbApiService {
         @Path("movie_id") movieId: Long,
         @Query("api_key") apiKey: String,
     ): MovieDto
+
+    @GET("genre/movie/list")
+    suspend fun getGenres(
+        @Query("api_key") apiKey: String,
+    ): GenreResponse
+
+    @GET("discover/movie")
+    suspend fun discoverMovies(
+        @Query("with_genres") genreId: Int?,
+        @Query("api_key") apiKey: String,
+        @Query("sort_by") sortBy: String = "popularity.desc",
+    ): MovieSearchResponse
 }
 
