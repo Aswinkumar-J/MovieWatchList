@@ -1,9 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MovieWatchlist" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/silver_metallic</item>
+        <item name="android:windowBackground">@color/deep_obsidian</item>
+        <item name="colorSurface">@color/dark_charcoal</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/steel_grey</item>
+        <item name="android:navigationBarColor">@color/deep_obsidian</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o">false</item>
     </style>
 
     <style name="Theme.MovieWatchlist" parent="Base.Theme.MovieWatchlist" />
+
+    <style name="Theme.MovieWatchlist.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/deep_obsidian</item>
+        <item name="android:statusBarColor">@color/deep_obsidian</item>
+        <item name="android:navigationBarColor">@color/deep_obsidian</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o">false</item>
+    </style>
 </resources>

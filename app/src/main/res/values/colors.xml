@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Cinematic Palette -->
+    <color name="primary_background">#0A0A0A</color>
+    <color name="surface_card">#1C1C1E</color>
+    <color name="primary_accent">#C0C0C0</color>
+    <color name="secondary_text">#8E8E93</color>
+    <color name="cta_platinum">#E5E4E2</color>
+    <color name="deep_obsidian">#0A0A0A</color>
+    <color name="dark_charcoal">#1C1C1E</color>
+    <color name="silver_metallic">#C0C0C0</color>
+    <color name="steel_grey">#8E8E93</color>
+    <color name="platinum">#E5E4E2</color>
 </resources>
