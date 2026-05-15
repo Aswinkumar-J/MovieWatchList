@@ -9,6 +9,11 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.moviewatchlist.databinding.ActivitySplashBinding
+import com.example.moviewatchlist.ui.auth.LoginActivity
+import com.example.moviewatchlist.di.ServiceLocator
+import com.example.moviewatchlist.data.repository.AuthRepository
+
+
 
 class SplashActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashBinding
@@ -35,12 +40,18 @@ class SplashActivity : AppCompatActivity() {
             .setStartDelay(500)
             .start()
 
-        // Transition to MainActivity after 2.5 seconds
+        // Transition after 2.5 seconds
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            val authRepository = ServiceLocator.provideAuthRepository()
+            val intent = if (authRepository.currentUser != null) {
+                Intent(this, MainActivity::class.java)
+            } else {
+                Intent(this, LoginActivity::class.java)
+            }
+            startActivity(intent)
             finish()
-            // Optional: override pending transition for a smooth fade out
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }, 2500)
+
     }
 }

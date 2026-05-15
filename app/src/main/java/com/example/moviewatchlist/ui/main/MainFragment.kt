@@ -9,7 +9,15 @@ import androidx.navigation.fragment.findNavController
 import com.example.moviewatchlist.R
 import com.example.moviewatchlist.data.model.WatchStatus
 import com.example.moviewatchlist.databinding.FragmentMainBinding
+import com.example.moviewatchlist.di.ServiceLocator
+import com.example.moviewatchlist.ui.auth.LoginActivity
+import android.content.Intent
 import com.google.android.material.tabs.TabLayoutMediator
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
+
+
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -45,7 +53,15 @@ class MainFragment : Fragment() {
                     )
                     true
                 }
+                R.id.action_logout -> {
+                    ServiceLocator.provideAuthRepository().signOut()
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    true
+                }
                 else -> false
+
             }
         }
 
@@ -54,8 +70,18 @@ class MainFragment : Fragment() {
                 MainFragmentDirections.actionMainFragmentToDiscoverFragment(),
             )
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                ServiceLocator.provideMovieRepository(requireContext()).isSyncing.collect { isSyncing ->
+                    binding.syncProgress.visibility = if (isSyncing) View.VISIBLE else View.GONE
+                }
+            }
+        }
+
         return binding.root
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

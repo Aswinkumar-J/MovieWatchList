@@ -25,6 +25,15 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MovieWatchlist.NoActionBar" />
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MovieWatchlist.NoActionBar" />
+
     </application>
 
 </manifest>

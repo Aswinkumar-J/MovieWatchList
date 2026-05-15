@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.navigation.safeargs)
+    alias(libs.plugins.google.services)
+
 }
 
 android {
@@ -70,6 +72,14 @@ dependencies {
     // TMDB networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

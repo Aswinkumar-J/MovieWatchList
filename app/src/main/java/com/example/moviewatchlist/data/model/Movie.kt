@@ -11,8 +11,8 @@ import androidx.room.PrimaryKey
 data class Movie(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val title: String,
-    val status: WatchStatus,
+    val title: String = "",
+    val status: WatchStatus = WatchStatus.PLAN_TO_WATCH,
     val rating: Float = 0f,
     val review: String? = null,
     val synopsis: String? = null,
@@ -21,4 +21,5 @@ data class Movie(
     val tmdbId: Long? = null,
     val tmdbVoteAverage: Float? = null,
 )
+
 
