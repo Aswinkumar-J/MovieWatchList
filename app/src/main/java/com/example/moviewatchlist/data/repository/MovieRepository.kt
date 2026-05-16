@@ -154,9 +154,16 @@ class MovieRepository(
                 apiKey = TmdbConstants.TMDB_API_KEY,
             )
         } catch (e: HttpException) {
-            throw TmdbException("TMDB request failed (HTTP ${e.code()}).", e)
+            val errorBody = e.response()?.errorBody()?.string()
+            val message = try {
+                val json = com.google.gson.JsonParser.parseString(errorBody).asJsonObject
+                json.get("status_message").asString
+            } catch (parseEx: Exception) {
+                "TMDB request failed (HTTP ${e.code()})."
+            }
+            throw TmdbException(message, e)
         } catch (e: IOException) {
-            throw TmdbException("Network error while searching TMDB.", e)
+            throw TmdbException("Network error while searching TMDB. Please check your internet connection.", e)
         }
 
         if (response.results.isEmpty()) return emptyList()

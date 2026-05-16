@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 data class DiscoverUiState(
@@ -17,6 +20,7 @@ data class DiscoverUiState(
     val movies: List<Movie> = emptyList(),
     val isLoading: Boolean = false,
     val selectedGenreId: Int? = null,
+    val errorMessage: String? = null,
 )
 
 class DiscoverViewModel(private val repository: MovieRepository) : ViewModel() {
@@ -24,43 +28,81 @@ class DiscoverViewModel(private val repository: MovieRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(DiscoverUiState())
     val uiState: StateFlow<DiscoverUiState> = _uiState.asStateFlow()
 
+    private val queryFlow = MutableStateFlow("")
     private var currentGenreId: Int? = null
 
     init {
         fetchGenres()
-        discoverMovies(null)
+        
+        viewModelScope.launch {
+            queryFlow
+                .debounce(500)
+                .distinctUntilChanged()
+                .collectLatest { query ->
+                    if (query.isBlank()) {
+                        discoverMovies(currentGenreId)
+                    } else {
+                        performSearch(query)
+                    }
+                }
+        }
     }
 
     fun searchMovies(query: String) {
-        if (query.isBlank()) {
-            discoverMovies(currentGenreId)
-            return
-        }
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+        queryFlow.value = query
+    }
+
+    private suspend fun performSearch(query: String) {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        try {
             val movies = repository.searchMovies(query)
-            _uiState.update { it.copy(movies = movies, isLoading = false) }
+            _uiState.update { it.copy(movies = movies, isLoading = false, errorMessage = null) }
+        } catch (e: Exception) {
+            _uiState.update { 
+                it.copy(
+                    isLoading = false, 
+                    errorMessage = e.localizedMessage ?: "Search failed. Please try again."
+                ) 
+            }
         }
     }
 
     private fun fetchGenres() {
         viewModelScope.launch {
-            val genres = repository.getGenres()
-            _uiState.update { it.copy(genres = genres) }
+            try {
+                val genres = repository.getGenres()
+                _uiState.update { it.copy(genres = genres) }
+            } catch (e: Exception) {
+                // Ignore genre errors for now
+            }
         }
     }
 
     fun selectGenre(genreId: Int?) {
         currentGenreId = genreId
-        _uiState.update { it.copy(selectedGenreId = genreId) }
-        discoverMovies(genreId)
+        _uiState.update { it.copy(selectedGenreId = genreId, errorMessage = null) }
+        // Clear search when changing genre
+        if (queryFlow.value.isNotBlank()) {
+            queryFlow.value = ""
+        } else {
+            viewModelScope.launch {
+                discoverMovies(genreId)
+            }
+        }
     }
 
-    private fun discoverMovies(genreId: Int?) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+    private suspend fun discoverMovies(genreId: Int?) {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        try {
             val movies = repository.discoverMovies(genreId)
-            _uiState.update { it.copy(movies = movies, isLoading = false) }
+            _uiState.update { it.copy(movies = movies, isLoading = false, errorMessage = null) }
+        } catch (e: Exception) {
+            _uiState.update { 
+                it.copy(
+                    isLoading = false, 
+                    errorMessage = e.localizedMessage ?: "Failed to load movies." 
+                ) 
+            }
         }
     }
 

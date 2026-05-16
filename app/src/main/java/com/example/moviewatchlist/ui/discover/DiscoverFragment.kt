@@ -62,6 +62,9 @@ class DiscoverFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     binding.progress.isVisible = state.isLoading
+                    binding.errorText.isVisible = !state.errorMessage.isNullOrBlank()
+                    binding.errorText.text = state.errorMessage.orEmpty()
+                    
                     adapter.submitList(state.movies)
 
                     if (binding.genreChips.childCount == 0 && state.genres.isNotEmpty()) {
